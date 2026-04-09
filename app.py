@@ -145,7 +145,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     CW = W - ML - MR
 
     def S(nm, **kw):
-        d = dict(fontName=FREG, fontSize=9, leading=13, textColor=SOTET)
+        d = dict(fontName=FREG, fontSize=10, leading=14, textColor=SOTET)
         d.update(kw)
         return ParagraphStyle(nm, **d)
 
@@ -153,15 +153,15 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     s_cim     = S('cim',  fontName=FBOLD, fontSize=22, textColor=BORD,  leading=28, alignment=TA_LEFT)
     s_alcim   = S('alcim',fontName=FREG,  fontSize=10, textColor=SZURKE,leading=14)
     s_fejlec  = S('fej',  fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12, alignment=TA_CENTER)
-    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=7.5,textColor=SZURKE,leading=11)
+    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=8.5,textColor=SZURKE,leading=12)
     s_val     = S('val',  fontName=FBOLD, fontSize=9,  textColor=SOTET, leading=13)
     s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
-    s_body    = S('bdy',  fontName=FREG,  fontSize=8.5,leading=13, alignment=TA_JUSTIFY, textColor=SOTET)
+    s_body    = S('bdy',  fontName=FREG,  fontSize=9.5,leading=14, alignment=TA_JUSTIFY, textColor=SOTET)
     s_bev     = S('bev',  fontName=FREG,  fontSize=9,  leading=14, textColor=SOTET)
     s_labléc  = S('lab',  fontName=FREG,  fontSize=7.5,textColor=SZURKE,alignment=TA_CENTER)
     s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=16, textColor=BORD, leading=22)
     s_th      = S('th',   fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12)
-    s_td      = S('td',   fontName=FREG,  fontSize=8,  textColor=SOTET, leading=12)
+    s_td      = S('td',   fontName=FREG,  fontSize=9,  textColor=SOTET, leading=13)
     s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
     s_kuldo   = S('kld',  fontName=FREG,  fontSize=8.5,textColor=SOTET, leading=13)
     s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=8.5,textColor=SOTET, leading=13)
@@ -200,9 +200,9 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     story.append(Spacer(1, 6*mm))
 
     # Küldi / Címzett sor
-    kuldo_str  = f"<b>Küldi:</b> {kuldo_nev or '–'}   {kuldo_tel or ''}   {kuldo_email or ''}"
     cimzett_str= f"<b>Címzett:</b> {ugyfel_nev or '–'}"
-    kc_tbl = Table([[Paragraph(kuldo_str, s_kuldo), Paragraph(cimzett_str, s_kuldo)]],
+    kuldo_str  = f"<b>Küldi:</b> {kuldo_nev or '–'}   {kuldo_tel or ''}   {kuldo_email or ''}"
+    kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo), Paragraph(kuldo_str, s_kuldo)]],
                    colWidths=[CW*0.55, CW*0.45])
     kc_tbl.setStyle(TableStyle([
         ('BOX',(0,0),(-1,-1),0.5, MID),
@@ -218,10 +218,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
 
     # Bevezető szöveg
     bev_lines = bevezeto.replace('\r\n','\n').replace('\r','\n')
-    keresztnev = ugyfel_nev.split()[0] if ugyfel_nev else 'Kedves Ügyfelünk'
-    kuldo_kereszt = kuldo_nev.split()[0] if kuldo_nev else ''
-    bev_teljes = f"Kedves {keresztnev}!\n\n{bev_lines}\n\nÜdvözlettel:\n{kuldo_kereszt}"
-    bev_html = bev_teljes.replace('\n','<br/>')
+    bev_html = bev_lines.replace('\n','<br/>')
     bev_tbl = Table([[Paragraph(bev_html, s_bev)]], colWidths=[CW])
     bev_tbl.setStyle(TableStyle([
         ('BOX',(0,0),(-1,-1),0.5, MID),
@@ -348,15 +345,17 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         if imgs:
             story.append(HRFlowable(width=CW, thickness=0.4, color=MID))
             story.append(Spacer(1, 3*mm))
-            GAP = 2.5*mm
+            GAP = 4*mm
             n   = min(len(imgs), 6)
-            if n <= 3:
+            if n <= 2:
                 cols_n = n
+            elif n == 3:
+                cols_n = 3
             else:
                 cols_n = 3
             rows_n = math.ceil(n / cols_n)
             iw = (CW - (cols_n-1)*GAP) / cols_n
-            ih = iw * 0.70   # 16:10 arány kb.
+            ih = iw * 0.80   # kicsit magasabb képek
 
             foto_rows = []
             for r in range(rows_n):
@@ -412,7 +411,7 @@ ugyfel_nev = st.text_input("Ügyfél neve", placeholder="pl. Kovács László", 
 # 3. Bevezető szöveg
 st.subheader("✉️ Bevezető szöveg")
 st.caption("Előre kitöltve, de szabadon szerkeszthető.")
-bevezeto = st.text_area("Bevezető", value=BEVEZETO_ALAPSZOVEG, height=130, label_visibility="collapsed")
+bevezeto = st.text_area("Bevezető", value=BEVEZETO_ALAPSZOVEG, height=200, label_visibility="collapsed")
 
 # 4. Ingatlanok
 st.subheader("🔗 Ingatlanbazar.hu hirdetések")
@@ -454,7 +453,7 @@ for i in range(len(st.session_state.url_list)):
                     st.session_state.desc_list[i] = st.text_area(
                         f"Szöveges leírás #{i+1} (szerkeszthető)",
                         value=st.session_state.desc_list[i],
-                        height=100, key=f"desc_{i}")
+                        height=170, key=f"desc_{i}")
                 else:
                     st.markdown('<div class="prop-err">❌ Nem sikerült letölteni. Ellenőrizd az URL-t!</div>', unsafe_allow_html=True)
             else:
