@@ -159,12 +159,12 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     s_lbl     = S('lbl',  fontName=FBOLD, fontSize=8.5,textColor=SZURKE,leading=12)
     s_val     = S('val',  fontName=FBOLD, fontSize=9,  textColor=SOTET, leading=13)
     s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
-    s_body    = S('bdy',  fontName=FREG,  fontSize=9.5,leading=14, alignment=TA_JUSTIFY, textColor=SOTET)
+    s_body    = S('bdy',  fontName=FREG,  fontSize=9,leading=13, alignment=TA_JUSTIFY, textColor=SOTET)
     s_bev     = S('bev',  fontName=FREG,  fontSize=9,  leading=14, textColor=SOTET)
     s_labléc  = S('lab',  fontName=FREG,  fontSize=8,textColor=SZURKE,alignment=TA_CENTER)
     s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=16, textColor=BORD, leading=22)
-    s_th      = S('th',   fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12)
-    s_td      = S('td',   fontName=FREG,  fontSize=9,  textColor=SOTET, leading=13)
+    s_th      = S('th',   fontName=FBOLD, fontSize=10,  textColor=FEHER, leading=12)
+    s_td      = S('td',   fontName=FREG,  fontSize=10,  textColor=SOTET, leading=13)
     s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
     s_kuldo   = S('kld',  fontName=FREG,  fontSize=9,textColor=SOTET, leading=13)
     s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=9,textColor=SOTET, leading=13)
@@ -295,7 +295,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         imgs = prop['images']
         desc = prop.get('desc_edit', '') or (p.get('description') or '')
 
-        ingatlan_cim = f"{idx}. javasolt ingatlan"
+        ingatlan_cim = f"{idx}. Javasolt ingatlan"
         q = (p.get('quarter') or '').strip()
         s = (p.get('settlement') or '').strip()
         helyszin = f'{q}, {s}' if q else s
@@ -363,20 +363,22 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         story.append(leiras_tbl)
         story.append(Spacer(1, 5*mm))
 
-        # ── Fotógaléria (max 6 kép, valódi vízszintes hézaggal) ──────────────
+        # ── Fotógaléria (fix 4 kép, egyenletes vízszintes és függőleges hézaggal) ──
         if imgs:
             story.append(HRFlowable(width=CW, thickness=0.4, color=MID))
             story.append(Spacer(1, 3*mm))
 
-            n = min(len(imgs), 6)
+            n = min(len(imgs), 4)
             cols_n = 2
-            rows_n = math.ceil(n / cols_n)
+            rows_n = 2
 
             GAP_X = 4*mm
-            GAP_Y = 5*mm
+            GAP_Y = 4*mm
 
             iw = (CW - GAP_X) / 2
             ih = iw * 0.72
+
+            selected_imgs = imgs[:4]
 
             foto_rows = []
             for r in range(rows_n):
@@ -384,12 +386,12 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
                 for c in range(cols_n):
                     idx2 = r * cols_n + c
                     if idx2 < n:
-                        img_path = imgs[idx2]
+                        img_path = selected_imgs[idx2]
                         try:
                             with PILImage.open(img_path) as im:
                                 orig_w, orig_h = im.size
                             ratio = orig_h / orig_w if orig_w else 0.75
-                            actual_h = min(iw * ratio, ih * 1.25)
+                            actual_h = min(iw * ratio, ih)
                         except Exception:
                             actual_h = ih
                         row.append(RLImage(img_path, width=iw, height=actual_h))
@@ -400,7 +402,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
             foto_tbl = Table(
                 foto_rows,
                 colWidths=[iw, iw],
-                rowHeights=[ih + GAP_Y] * rows_n
+                rowHeights=[ih + GAP_Y, ih + GAP_Y]
             )
             foto_tbl.setStyle(TableStyle([
                 ('LEFTPADDING',(0,0),(-1,-1),0),
@@ -422,13 +424,13 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
 # 1. Küldő adatai
 st.subheader("📨 Küldő adatai")
 c1,c2,c3 = st.columns(3)
-with c1: kuldo_nev   = st.text_input("Küldő neve",    placeholder="pl. Takács Adél")
-with c2: kuldo_tel   = st.text_input("Telefon",        placeholder="pl. +36 30 600 9530")
-with c3: kuldo_email = st.text_input("E-mail",         placeholder="pl. adel@otthonter.hu")
+with c1: kuldo_nev   = st.text_input("Küldő neve",    placeholder="pl. Varga Norbert")
+with c2: kuldo_tel   = st.text_input("Telefon",        placeholder="pl. +36 20 771 1077")
+with c3: kuldo_email = st.text_input("E-mail",         placeholder="pl. norbi.otthonter@gmail.com")
 
 # 2. Ügyfél
 st.subheader("👤 Ügyfél neve")
-ugyfel_nev = st.text_input("Ügyfél neve", placeholder="pl. Kovács László", label_visibility="collapsed")
+ugyfel_nev = st.text_input("Ügyfél neve", placeholder="pl. Magyar Péter", label_visibility="collapsed")
 
 # 3. Bevezető szöveg
 st.subheader("✉️ Bevezető szöveg")
