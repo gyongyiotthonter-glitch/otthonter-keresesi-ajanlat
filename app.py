@@ -111,20 +111,17 @@ def fmt_m2(v):
 
 @st.cache_resource
 def reg_fonts():
-    """Mindig a projektben lévő DejaVu fontokat használja."""
-    base_dir = os.path.dirname(__file__)
-    regular = os.path.join(base_dir, "DejaVuSans.ttf")
-    bold    = os.path.join(base_dir, "DejaVuSans-Bold.ttf")
-    italic  = os.path.join(base_dir, "DejaVuSans-Oblique.ttf")
-
-    if all(os.path.exists(p) for p in (regular, bold, italic)):
-        pdfmetrics.registerFont(TTFont("DV",   regular))
-        pdfmetrics.registerFont(TTFont("DV-B", bold))
-        pdfmetrics.registerFont(TTFont("DV-I", italic))
-        return "DV", "DV-B", "DV-I"
-
-    # Ha valamiért hiányzik, essünk vissza Helvetica-ra
-    return "Helvetica", "Helvetica-Bold", "Helvetica-Oblique"
+    candidates = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+    ]
+    if all(os.path.exists(p) for p in candidates):
+        pdfmetrics.registerFont(TTFont('DV',     candidates[0]))
+        pdfmetrics.registerFont(TTFont('DV-B',   candidates[1]))
+        pdfmetrics.registerFont(TTFont('DV-I',   candidates[2]))
+        return 'DV', 'DV-B', 'DV-I'
+    return 'Helvetica', 'Helvetica-Bold', 'Helvetica-Oblique'
 
 FREG, FBOLD, FITAL = reg_fonts()
 
@@ -148,26 +145,26 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     CW = W - ML - MR
 
     def S(nm, **kw):
-        d = dict(fontName=FREG, fontSize=11, leading=15, textColor=SOTET)
+        d = dict(fontName=FREG, fontSize=10, leading=14, textColor=SOTET)
         d.update(kw)
         return ParagraphStyle(nm, **d)
 
-    # Stílusok – nagyobb, olvashatóbb méretek
-    s_cim     = S('cim',  fontName=FBOLD, fontSize=22, textColor=BORD,  leading=30, alignment=TA_LEFT)
-    s_alcim   = S('alcim',fontName=FREG,  fontSize=12, textColor=SOTET,leading=15)
-    s_fejlec  = S('fej',  fontName=FBOLD, fontSize=11, textColor=FEHER, leading=14, alignment=TA_CENTER)
-    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=10, textColor=SZURKE,leading=15)
-    s_val     = S('val',  fontName=FBOLD, fontSize=10, textColor=SOTET, leading=15)
-    s_ar      = S('ar',   fontName=FBOLD, fontSize=13, textColor=BORD,  leading=18)
-    s_body    = S('bdy',  fontName=FREG,  fontSize=11,leading=16, alignment=TA_JUSTIFY, textColor=SOTET)
-    s_bev     = S('bev',  fontName=FREG,  fontSize=11,leading=16, textColor=SOTET)
-    s_labléc  = S('lab',  fontName=FREG,  fontSize=9, textColor=SZURKE,alignment=TA_CENTER)
-    s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=18, textColor=BORD, leading=24)
-    s_th      = S('th',   fontName=FBOLD, fontSize=10, textColor=FEHER, leading=14)
-    s_td      = S('td',   fontName=FREG,  fontSize=10, textColor=SOTET, leading=15)
-    s_td_ar   = S('tda',  fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
-    s_kuldo   = S('kld',  fontName=FREG,  fontSize=10,textColor=SOTET, leading=14)
-    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=10,textColor=SOTET, leading=14)
+    # Stílusok
+    s_cim     = S('cim',  fontName=FBOLD, fontSize=22, textColor=BORD,  leading=28, alignment=TA_LEFT)
+    s_alcim   = S('alcim',fontName=FREG,  fontSize=10, textColor=SZURKE,leading=14)
+    s_fejlec  = S('fej',  fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12, alignment=TA_CENTER)
+    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=8.5,textColor=SZURKE,leading=12)
+    s_val     = S('val',  fontName=FBOLD, fontSize=9,  textColor=SOTET, leading=13)
+    s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
+    s_body    = S('bdy',  fontName=FREG,  fontSize=9.5,leading=14, alignment=TA_JUSTIFY, textColor=SOTET)
+    s_bev     = S('bev',  fontName=FREG,  fontSize=9,  leading=14, textColor=SOTET)
+    s_labléc  = S('lab',  fontName=FREG,  fontSize=7.5,textColor=SZURKE,alignment=TA_CENTER)
+    s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=16, textColor=BORD, leading=22)
+    s_th      = S('th',   fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12)
+    s_td      = S('td',   fontName=FREG,  fontSize=9,  textColor=SOTET, leading=13)
+    s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
+    s_kuldo   = S('kld',  fontName=FREG,  fontSize=8.5,textColor=SOTET, leading=13)
+    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=8.5,textColor=SOTET, leading=13)
 
     def lap_lablec(canvas, doc):
         canvas.saveState()
@@ -187,8 +184,19 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     # ══ 1. OLDAL: FEDŐLAP ══════════════════════════════════════════════════════
 
     # Logó helyett stilizált szöveges fejléc
-    logo_tbl = Table([[Paragraph('⌂  OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14,
-                                                     textColor=BORD, leading=18))]], colWidths=[CW])
+    logo_path = os.path.join(os.path.dirname(__file__), 'logo_otthonter.png')
+    if os.path.exists(logo_path):
+        try:
+            with PILImage.open(logo_path) as lim:
+                lw, lh = lim.size
+            logo_h = 1.5*cm
+            logo_w = logo_h * (lw / lh)
+            logo_img = RLImage(logo_path, width=logo_w, height=logo_h)
+            logo_tbl = Table([[logo_img]], colWidths=[CW])
+        except Exception:
+            logo_tbl = Table([[Paragraph('⌂  OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14, textColor=BORD, leading=18))]], colWidths=[CW])
+    else:
+        logo_tbl = Table([[Paragraph('⌂  OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14, textColor=BORD, leading=18))]], colWidths=[CW])
     logo_tbl.setStyle(TableStyle([
         ('BOTTOMPADDING',(0,0),(-1,-1), 2),
         ('TOPPADDING',(0,0),(-1,-1), 2),
@@ -249,7 +257,9 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     for i, prop in enumerate(properties, 1):
         p  = prop['data']
         sf = p.get('serializedFields', [])
-        helyszin = f"{p.get('quarter','')}, {p.get('settlement','')}"
+        q = (p.get('quarter') or '').strip()
+        s = (p.get('settlement') or '').strip()
+        helyszin = f'{q}, {s}' if q else s
         tipus    = get_sf(sf,'Ház típusa') or get_sf(sf,'Ingatlan típusa') or '–'
         oss_rows.append([
             Paragraph(helyszin, s_td),
@@ -283,11 +293,13 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         desc = prop.get('desc_edit', '') or (p.get('description') or '')
 
         ingatlan_cim = f"{idx}. javasolt ingatlan"
-        helyszin = f"{p.get('quarter','')}, {p.get('settlement','')}"
+        q = (p.get('quarter') or '').strip()
+        s = (p.get('settlement') or '').strip()
+        helyszin = f'{q}, {s}' if q else s
 
         # Fejléc
         story.append(Paragraph(ingatlan_cim, s_ingatlan_cim))
-        story.append(Paragraph(helyszin, s_alcim))
+        story.append(Paragraph(helyszin, S('hlsz', fontName=FBOLD, fontSize=13, textColor=SOTET, leading=18)))
         story.append(Spacer(1, 3*mm))
         story.append(HRFlowable(width=CW, thickness=1, color=BORD))
         story.append(Spacer(1, 4*mm))
@@ -304,61 +316,60 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
             ('Tájolás',      get_sf(sf,'Tájolás') or '–'),
             ('Nm² ár',       fmt_price(p.get('sqmPriceHuf',0)).replace(' Ft',' Ft/m²') if p.get('sqmPriceHuf') else '–'),
         ]
-        adat_sorok = [[Paragraph(k, s_lbl), Paragraph(v, s_val)] for k,v in adat_mezok]
-        ADATW = CW * 0.42
-        adat_tbl = Table(adat_sorok, colWidths=[ADATW*0.44, ADATW*0.56])
+        # Adattábla – teljes szélességben, 3 oszlopos: label | érték | label | érték | label | érték
+        adat_sorok_full = []
+        cols_adat = 3   # hány adat kerüljön egy sorba (label+érték párok)
+        for row_i in range(0, len(adat_mezok), cols_adat):
+            chunk = adat_mezok[row_i:row_i+cols_adat]
+            while len(chunk) < cols_adat:
+                chunk.append(('', ''))
+            row_cells = []
+            for k, v in chunk:
+                row_cells.append(Paragraph(k, s_lbl))
+                row_cells.append(Paragraph(v, s_val))
+            adat_sorok_full.append(row_cells)
+
+        col_unit = CW / (cols_adat * 2)
+        adat_col_widths = [col_unit * 0.85, col_unit * 1.15] * cols_adat
+        adat_tbl = Table(adat_sorok_full, colWidths=adat_col_widths)
         adat_tbl.setStyle(TableStyle([
             ('ROWBACKGROUNDS',(0,0),(-1,-1),[FEHER, KREM]),
             ('LINEBELOW',(0,0),(-1,-2),0.3, MID),
             ('LEFTPADDING',(0,0),(-1,-1),5),
             ('RIGHTPADDING',(0,0),(-1,-1),5),
-            ('TOPPADDING',(0,0),(-1,-1),3),
-            ('BOTTOMPADDING',(0,0),(-1,-1),3),
+            ('TOPPADDING',(0,0),(-1,-1),4),
+            ('BOTTOMPADDING',(0,0),(-1,-1),4),
             ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
             ('BOX',(0,0),(-1,-1),0.4, MID),
         ]))
+        story.append(adat_tbl)
+        story.append(Spacer(1, 4*mm))
 
-        # Leírás (jobb oldal)
-        LEIRASW = CW - ADATW - 4*mm
-        desc_clean = (desc[:900]).replace('\n','<br/>')
-        leiras_tbl = Table([[Paragraph(desc_clean, s_body)]], colWidths=[LEIRASW])
+        # Leírás – teljes szélességben
+        desc_clean = desc.replace('\n','<br/>')
+        leiras_tbl = Table([[Paragraph(desc_clean, s_body)]], colWidths=[CW])
         leiras_tbl.setStyle(TableStyle([
             ('BOX',(0,0),(-1,-1),0.4, MID),
             ('BACKGROUND',(0,0),(-1,-1), KREM),
-            ('LEFTPADDING',(0,0),(-1,-1),7),
-            ('RIGHTPADDING',(0,0),(-1,-1),7),
-            ('TOPPADDING',(0,0),(-1,-1),6),
-            ('BOTTOMPADDING',(0,0),(-1,-1),6),
+            ('LEFTPADDING',(0,0),(-1,-1),8),
+            ('RIGHTPADDING',(0,0),(-1,-1),8),
+            ('TOPPADDING',(0,0),(-1,-1),7),
+            ('BOTTOMPADDING',(0,0),(-1,-1),7),
             ('VALIGN',(0,0),(-1,-1),'TOP'),
         ]))
-
-        ket_hasab = Table([[adat_tbl, Spacer(4*mm,1), leiras_tbl]],
-                          colWidths=[ADATW, 4*mm, LEIRASW])
-        ket_hasab.setStyle(TableStyle([
-            ('VALIGN',(0,0),(-1,-1),'TOP'),
-            ('LEFTPADDING',(0,0),(-1,-1),0),
-            ('RIGHTPADDING',(0,0),(-1,-1),0),
-            ('TOPPADDING',(0,0),(-1,-1),0),
-            ('BOTTOMPADDING',(0,0),(-1,-1),0),
-        ]))
-        story.append(ket_hasab)
+        story.append(leiras_tbl)
         story.append(Spacer(1, 5*mm))
 
         # ── Fotógaléria (max 6 kép, aránymegtartással) ──────────────────────
         if imgs:
             story.append(HRFlowable(width=CW, thickness=0.4, color=MID))
             story.append(Spacer(1, 3*mm))
-            GAP = 4*mm
-            n   = min(len(imgs), 6)
-            if n <= 2:
-                cols_n = n
-            elif n == 3:
-                cols_n = 3
-            else:
-                cols_n = 3
+            GAP = 5*mm
+            n      = min(len(imgs), 6)
+            cols_n = 2
             rows_n = math.ceil(n / cols_n)
             iw = (CW - (cols_n-1)*GAP) / cols_n
-            ih = iw * 0.80   # kicsit magasabb képek
+            ih = iw * 0.72
 
             foto_rows = []
             for r in range(rows_n):
@@ -414,7 +425,7 @@ ugyfel_nev = st.text_input("Ügyfél neve", placeholder="pl. Kovács László", 
 # 3. Bevezető szöveg
 st.subheader("✉️ Bevezető szöveg")
 st.caption("Előre kitöltve, de szabadon szerkeszthető.")
-bevezeto = st.text_area("Bevezető", value=BEVEZETO_ALAPSZOVEG, height=200, label_visibility="collapsed")
+bevezeto = st.text_area("Bevezető", value=BEVEZETO_ALAPSZOVEG, height=300, label_visibility="collapsed")
 
 # 4. Ingatlanok
 st.subheader("🔗 Ingatlanbazar.hu hirdetések")
@@ -456,7 +467,7 @@ for i in range(len(st.session_state.url_list)):
                     st.session_state.desc_list[i] = st.text_area(
                         f"Szöveges leírás #{i+1} (szerkeszthető)",
                         value=st.session_state.desc_list[i],
-                        height=170, key=f"desc_{i}")
+                        height=260, key=f"desc_{i}")
                 else:
                     st.markdown('<div class="prop-err">❌ Nem sikerült letölteni. Ellenőrizd az URL-t!</div>', unsafe_allow_html=True)
             else:
