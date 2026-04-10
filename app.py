@@ -153,7 +153,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         return ParagraphStyle(nm, **d)
 
     # Stílusok
-    s_cim     = S('cim',  fontName=FBOLD, fontSize=22, textColor=BORD,  leading=28, alignment=TA_LEFT)
+    s_cim     = S('cim',  fontName=FBOLD, fontSize=20, textColor=colors.HexColor('#4B647F'),  leading=28, alignment=TA_LEFT)
     s_alcim   = S('alcim',fontName=FREG,  fontSize=10, textColor=SZURKE,leading=14)
     s_fejlec  = S('fej',  fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12, alignment=TA_CENTER)
     s_lbl     = S('lbl',  fontName=FBOLD, fontSize=8.5,textColor=SZURKE,leading=12)
@@ -275,7 +275,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     CW6 = [CW*0.30, CW*0.16, CW*0.12, CW*0.12, CW*0.10, CW*0.20]
     oss_tbl = Table(oss_rows, colWidths=CW6)
     oss_tbl.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0), BORD),
+        ('BACKGROUND',(0,0),(-1,0), colors.HexColor('#4B647F')),
         ('ROWBACKGROUNDS',(0,1),(-1,-1), [FEHER, KREM]),
         ('GRID',(0,0),(-1,-1), 0.3, MID),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
