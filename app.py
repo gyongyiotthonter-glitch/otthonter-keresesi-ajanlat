@@ -192,8 +192,8 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         try:
             with PILImage.open(logo_path) as lim:
                 lw, lh = lim.size
-            logo_h = 2.2*cm
-            logo_w = logo_h * (lw / lh)
+            logo_w = CW
+            logo_h = logo_w * (lh / lw)
             logo_img = RLImage(logo_path, width=logo_w, height=logo_h)
             logo_tbl = Table([[logo_img]], colWidths=[CW])
         except Exception:
@@ -275,7 +275,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     CW6 = [CW*0.30, CW*0.16, CW*0.12, CW*0.12, CW*0.10, CW*0.20]
     oss_tbl = Table(oss_rows, colWidths=CW6)
     oss_tbl.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0), colors.HexColor('#4472C4')),  # acélkék
+        ('BACKGROUND',(0,0),(-1,0), colors.HexColor('#4B647F')),  # acélkék
         ('ROWBACKGROUNDS',(0,1),(-1,-1), [FEHER, KREM]),
         ('GRID',(0,0),(-1,-1), 0.3, MID),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
