@@ -111,17 +111,20 @@ def fmt_m2(v):
 
 @st.cache_resource
 def reg_fonts():
-    candidates = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
-    ]
-    if all(os.path.exists(p) for p in candidates):
-        pdfmetrics.registerFont(TTFont('DV',     candidates[0]))
-        pdfmetrics.registerFont(TTFont('DV-B',   candidates[1]))
-        pdfmetrics.registerFont(TTFont('DV-I',   candidates[2]))
-        return 'DV', 'DV-B', 'DV-I'
-    return 'Helvetica', 'Helvetica-Bold', 'Helvetica-Oblique'
+    """Mindig a projektben lévő DejaVu fontokat használja."""
+    base_dir = os.path.dirname(__file__)
+    regular = os.path.join(base_dir, "DejaVuSans.ttf")
+    bold    = os.path.join(base_dir, "DejaVuSans-Bold.ttf")
+    italic  = os.path.join(base_dir, "DejaVuSans-Oblique.ttf")
+
+    if all(os.path.exists(p) for p in (regular, bold, italic)):
+        pdfmetrics.registerFont(TTFont("DV",   regular))
+        pdfmetrics.registerFont(TTFont("DV-B", bold))
+        pdfmetrics.registerFont(TTFont("DV-I", italic))
+        return "DV", "DV-B", "DV-I"
+
+    # Ha valamiért hiányzik, essünk vissza Helvetica-ra
+    return "Helvetica", "Helvetica-Bold", "Helvetica-Oblique"
 
 FREG, FBOLD, FITAL = reg_fonts()
 
