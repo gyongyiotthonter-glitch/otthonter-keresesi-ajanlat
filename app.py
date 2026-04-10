@@ -363,48 +363,54 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         story.append(leiras_tbl)
         story.append(Spacer(1, 5*mm))
 
-        # ── Fotógaléria (max 6 kép, aránymegtartással) ──────────────────────
+        # ── Fotógaléria (max 6 kép, valódi vízszintes hézaggal) ──────────────
         if imgs:
             story.append(HRFlowable(width=CW, thickness=0.4, color=MID))
             story.append(Spacer(1, 3*mm))
-            GAP = 2.5*mm
-            n      = min(len(imgs), 6)
+
+            n = min(len(imgs), 6)
             cols_n = 2
             rows_n = math.ceil(n / cols_n)
-            iw = (CW - (cols_n-1)*GAP) / cols_n
+
+            GAP_X = 4*mm
+            GAP_Y = 3*mm
+
+            iw = (CW - GAP_X) / 2
             ih = iw * 0.72
 
             foto_rows = []
             for r in range(rows_n):
                 row = []
                 for c in range(cols_n):
-                    idx2 = r*cols_n + c
+                    idx2 = r * cols_n + c
                     if idx2 < n:
                         img_path = imgs[idx2]
-                        # Aránymegtartás: lekérjük a valódi méretet
                         try:
                             with PILImage.open(img_path) as im:
                                 orig_w, orig_h = im.size
                             ratio = orig_h / orig_w if orig_w else 0.75
-                            actual_h = iw * ratio
-                            actual_h = min(actual_h, ih * 1.3)
+                            actual_h = min(iw * ratio, ih * 1.25)
                         except Exception:
                             actual_h = ih
                         row.append(RLImage(img_path, width=iw, height=actual_h))
                     else:
-                        row.append('')
+                        row.append(Spacer(1, ih))
                 foto_rows.append(row)
 
-            foto_tbl = Table(foto_rows,
-                             colWidths=[iw]*cols_n,
-                             rowHeights=None)
+            foto_tbl = Table(
+                foto_rows,
+                colWidths=[iw, iw],
+                rowHeights=[ih + GAP_Y] * rows_n
+            )
             foto_tbl.setStyle(TableStyle([
-                ('LEFTPADDING',(0,0),(-1,-1),GAP/2),
-                ('RIGHTPADDING',(0,0),(-1,-1),GAP/2),
-                ('TOPPADDING',(0,0),(-1,-1),GAP/2),
-                ('BOTTOMPADDING',(0,0),(-1,-1),GAP/2),
+                ('LEFTPADDING',(0,0),(-1,-1),0),
+                ('RIGHTPADDING',(0,0),(-1,-1),0),
+                ('TOPPADDING',(0,0),(-1,-1),0),
+                ('BOTTOMPADDING',(0,0),(-1,-1),0),
                 ('ALIGN',(0,0),(-1,-1),'CENTER'),
                 ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                ('COLSPACING',(0,0),(-1,-1),GAP_X),
+                ('ROWSPACING',(0,0),(-1,-1),GAP_Y),
             ]))
             story.append(foto_tbl)
 
