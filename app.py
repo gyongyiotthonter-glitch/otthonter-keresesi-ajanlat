@@ -184,34 +184,48 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
                             onPage=lap_lablec, onLaterPages=lap_lablec)
     story = []
 
-# == 1. OLDAL: FEDŐLAP ==========================================
+    # ══ 1. OLDAL: FEDŐLAP ══════════════════════════════════════════════════════
 
-# Teljes szélességű hullámos PNG fejléc
-fejlec_path = os.path.join(os.path.dirname(__file__), 'fejlec_otthonter.png')
-if os.path.exists(fejlec_path):
-    try:
-        with PILImage.open(fejlec_path) as lim:
-            lw, lh = lim.size
-        fejlec_w = CW
-        fejlec_h = fejlec_w * (lh / lw)
-        fejlec_img = RLImage(fejlec_path, width=fejlec_w, height=fejlec_h)
-        fejlec_tbl = Table([[fejlec_img]], colWidths=[CW])
-    except Exception:
-        fejlec_tbl = Table([[Paragraph('OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14, textColor=BORD, leading=18))]], colWidths=[CW])
-else:
-    fejlec_tbl = Table([[Paragraph('OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14, textColor=BORD, leading=18))]], colWidths=[CW])
+    # Logó helyett stilizált szöveges fejléc
+    logo_path = os.path.join(os.path.dirname(__file__), 'logo_otthonter.png')
+    if os.path.exists(logo_path):
+        try:
+            with PILImage.open(logo_path) as lim:
+                lw, lh = lim.size
+            logo_h = 1.5*cm
+            logo_w = logo_h * (lw / lh)
+            logo_img = RLImage(logo_path, width=logo_w, height=logo_h)
+            logo_tbl = Table([[logo_img]], colWidths=[CW])
+        except Exception:
+            logo_tbl = Table([[Paragraph('⌂  OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14, textColor=BORD, leading=18))]], colWidths=[CW])
+    else:
+        logo_tbl = Table([[Paragraph('⌂  OTTHONTÉR', S('lg', fontName=FBOLD, fontSize=14, textColor=BORD, leading=18))]], colWidths=[CW])
+    logo_tbl.setStyle(TableStyle([
+        ('BOTTOMPADDING',(0,0),(-1,-1), 2),
+        ('TOPPADDING',(0,0),(-1,-1), 2),
+    ]))
+    story.append(logo_tbl)
+    story.append(Spacer(1, 6*mm))
 
-fejlec_tbl.setStyle(TableStyle([
-    ('LEFTPADDING',(0,0),(-1,-1), 0),
-    ('RIGHTPADDING',(0,0),(-1,-1), 0),
-    ('TOPPADDING',(0,0),(-1,-1), 0),
-    ('BOTTOMPADDING',(0,0),(-1,-1), 0),
-]))
-story.append(fejlec_tbl)
-story.append(Spacer(1, 6*mm))
+    story.append(Paragraph('INGATLAN KERESÉSI AJÁNLAT', s_cim))
+    story.append(Spacer(1, 6*mm))
 
-story.append(Paragraph('INGATLAN KERESÉSI AJÁNLAT', s_cim))
-story.append(Spacer(1, 6*mm))
+    # Küldi / Címzett sor
+    cimzett_str= f"<b>Címzett:</b> {ugyfel_nev or '–'}"
+    kuldo_str  = f"<b>Küldi:</b> {kuldo_nev or '–'}   {kuldo_tel or ''}   {kuldo_email or ''}"
+    kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo), Paragraph(kuldo_str, s_kuldo)]],
+                   colWidths=[CW*0.55, CW*0.45])
+    kc_tbl.setStyle(TableStyle([
+        ('BOX',(0,0),(-1,-1),0.5, MID),
+        ('LINEAFTER',(0,0),(0,-1),0.5, MID),
+        ('BACKGROUND',(0,0),(-1,-1), KREM),
+        ('LEFTPADDING',(0,0),(-1,-1),7),
+        ('RIGHTPADDING',(0,0),(-1,-1),7),
+        ('TOPPADDING',(0,0),(-1,-1),6),
+        ('BOTTOMPADDING',(0,0),(-1,-1),6),
+    ]))
+    story.append(kc_tbl)
+    story.append(Spacer(1, 6*mm))
 
     # Bevezető szöveg
     bev_lines = bevezeto.replace('\r\n','\n').replace('\r','\n')
