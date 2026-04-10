@@ -143,7 +143,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
 
     W, H = A4
     ML = MR = 1.6*cm
-    MT = 0.8*cm
+    MT = 1.4*cm
     MB = 1.4*cm
     CW = W - ML - MR
 
@@ -166,8 +166,8 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     s_th      = S('th',   fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12)
     s_td      = S('td',   fontName=FREG,  fontSize=9,  textColor=SOTET, leading=13)
     s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
-    s_kuldo   = S('kld',  fontName=FREG,  fontSize=10,  textColor=SOTET, leading=14)
-    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=10,  textColor=SOTET, leading=14)
+    s_kuldo   = S('kld',  fontName=FREG,  fontSize=8.5,textColor=SOTET, leading=13)
+    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=8.5,textColor=SOTET, leading=13)
 
     def lap_lablec(canvas, doc):
         canvas.saveState()
@@ -187,13 +187,13 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     # ══ 1. OLDAL: FEDŐLAP ══════════════════════════════════════════════════════
 
     # Logó helyett stilizált szöveges fejléc
-    logo_path = os.path.join(os.path.dirname(__file__), 'fejlec_otthonter.png')
+    logo_path = os.path.join(os.path.dirname(__file__), 'logo_otthonter.png')
     if os.path.exists(logo_path):
         try:
             with PILImage.open(logo_path) as lim:
                 lw, lh = lim.size
-            logo_w = CW
-            logo_h = logo_w * (lh / lw)
+            logo_h = 1.5*cm
+            logo_w = logo_h * (lw / lh)
             logo_img = RLImage(logo_path, width=logo_w, height=logo_h)
             logo_tbl = Table([[logo_img]], colWidths=[CW])
         except Exception:
@@ -205,18 +205,15 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         ('TOPPADDING',(0,0),(-1,-1), 2),
     ]))
     story.append(logo_tbl)
-    story.append(HRFlowable(width=CW, thickness=1.5, color=BORD))
-    story.append(Spacer(1, 8*mm))
+    story.append(Spacer(1, 6*mm))
 
-    story.append(Paragraph('INGATLAN KERESÉSI', s_cim))
-    story.append(Paragraph('AJÁNLAT', S('cim2', fontName=FBOLD, fontSize=22,
-                                         textColor=BORD, leading=28)))
+    story.append(Paragraph('INGATLAN KERESÉSI AJÁNLAT', s_cim))
     story.append(Spacer(1, 6*mm))
 
     # Küldi / Címzett sor
     cimzett_str= f"<b>Címzett:</b> {ugyfel_nev or '–'}"
     kuldo_str  = f"<b>Küldi:</b> {kuldo_nev or '–'}   {kuldo_tel or ''}   {kuldo_email or ''}"
-    kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo_b), Paragraph(kuldo_str, s_kuldo)]],
+    kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo), Paragraph(kuldo_str, s_kuldo)]],
                    colWidths=[CW*0.55, CW*0.45])
     kc_tbl.setStyle(TableStyle([
         ('BOX',(0,0),(-1,-1),0.5, MID),
@@ -275,7 +272,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     CW6 = [CW*0.30, CW*0.16, CW*0.12, CW*0.12, CW*0.10, CW*0.20]
     oss_tbl = Table(oss_rows, colWidths=CW6)
     oss_tbl.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0), colors.HexColor('#4B647F')),  # acélkék
+        ('BACKGROUND',(0,0),(-1,0), BORD),
         ('ROWBACKGROUNDS',(0,1),(-1,-1), [FEHER, KREM]),
         ('GRID',(0,0),(-1,-1), 0.3, MID),
         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
