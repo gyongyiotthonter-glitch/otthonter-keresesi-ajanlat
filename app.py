@@ -148,26 +148,26 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     CW = W - ML - MR
 
     def S(nm, **kw):
-        d = dict(fontName=FREG, fontSize=10, leading=14, textColor=SOTET)
+        d = dict(fontName=FREG, fontSize=11, leading=15, textColor=SOTET)
         d.update(kw)
         return ParagraphStyle(nm, **d)
 
-    # Stílusok
-    s_cim     = S('cim',  fontName=FBOLD, fontSize=22, textColor=BORD,  leading=28, alignment=TA_LEFT)
-    s_alcim   = S('alcim',fontName=FREG,  fontSize=10, textColor=SZURKE,leading=14)
-    s_fejlec  = S('fej',  fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12, alignment=TA_CENTER)
-    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=8.5,textColor=SZURKE,leading=12)
-    s_val     = S('val',  fontName=FBOLD, fontSize=9,  textColor=SOTET, leading=13)
-    s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
-    s_body    = S('bdy',  fontName=FREG,  fontSize=9.5,leading=14, alignment=TA_JUSTIFY, textColor=SOTET)
-    s_bev     = S('bev',  fontName=FREG,  fontSize=9,  leading=14, textColor=SOTET)
-    s_labléc  = S('lab',  fontName=FREG,  fontSize=7.5,textColor=SZURKE,alignment=TA_CENTER)
-    s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=16, textColor=BORD, leading=22)
-    s_th      = S('th',   fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12)
-    s_td      = S('td',   fontName=FREG,  fontSize=9,  textColor=SOTET, leading=13)
-    s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
-    s_kuldo   = S('kld',  fontName=FREG,  fontSize=8.5,textColor=SOTET, leading=13)
-    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=8.5,textColor=SOTET, leading=13)
+    # Stílusok – nagyobb, olvashatóbb méretek
+    s_cim     = S('cim',  fontName=FBOLD, fontSize=24, textColor=BORD,  leading=30, alignment=TA_LEFT)
+    s_alcim   = S('alcim',fontName=FREG,  fontSize=11, textColor=SZURKE,leading=15)
+    s_fejlec  = S('fej',  fontName=FBOLD, fontSize=10, textColor=FEHER, leading=14, alignment=TA_CENTER)
+    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=11, textColor=SZURKE,leading=15)
+    s_val     = S('val',  fontName=FBOLD, fontSize=11, textColor=SOTET, leading=15)
+    s_ar      = S('ar',   fontName=FBOLD, fontSize=13, textColor=BORD,  leading=18)
+    s_body    = S('bdy',  fontName=FREG,  fontSize=11,leading=16, alignment=TA_JUSTIFY, textColor=SOTET)
+    s_bev     = S('bev',  fontName=FREG,  fontSize=11,leading=16, textColor=SOTET)
+    s_labléc  = S('lab',  fontName=FREG,  fontSize=9, textColor=SZURKE,alignment=TA_CENTER)
+    s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=18, textColor=BORD, leading=24)
+    s_th      = S('th',   fontName=FBOLD, fontSize=10, textColor=FEHER, leading=14)
+    s_td      = S('td',   fontName=FREG,  fontSize=11, textColor=SOTET, leading=15)
+    s_td_ar   = S('tda',  fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
+    s_kuldo   = S('kld',  fontName=FREG,  fontSize=10,textColor=SOTET, leading=14)
+    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=10,textColor=SOTET, leading=14)
 
     def lap_lablec(canvas, doc):
         canvas.saveState()
