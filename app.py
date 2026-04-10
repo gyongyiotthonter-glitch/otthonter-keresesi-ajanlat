@@ -143,7 +143,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
 
     W, H = A4
     ML = MR = 1.6*cm
-    MT = 1.4*cm
+    MT = 1*cm
     MB = 1.4*cm
     CW = W - ML - MR
 
@@ -161,13 +161,13 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
     s_body    = S('bdy',  fontName=FREG,  fontSize=9.5,leading=14, alignment=TA_JUSTIFY, textColor=SOTET)
     s_bev     = S('bev',  fontName=FREG,  fontSize=9,  leading=14, textColor=SOTET)
-    s_labléc  = S('lab',  fontName=FREG,  fontSize=7.5,textColor=SZURKE,alignment=TA_CENTER)
+    s_labléc  = S('lab',  fontName=FREG,  fontSize=8,textColor=SZURKE,alignment=TA_CENTER)
     s_ingatlan_cim = S('ict', fontName=FBOLD, fontSize=16, textColor=BORD, leading=22)
     s_th      = S('th',   fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12)
     s_td      = S('td',   fontName=FREG,  fontSize=9,  textColor=SOTET, leading=13)
     s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
-    s_kuldo   = S('kld',  fontName=FREG,  fontSize=8.5,textColor=SOTET, leading=13)
-    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=8.5,textColor=SOTET, leading=13)
+    s_kuldo   = S('kld',  fontName=FREG,  fontSize=9,textColor=SOTET, leading=13)
+    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=9,textColor=SOTET, leading=13)
 
     def lap_lablec(canvas, doc):
         canvas.saveState()
@@ -216,7 +216,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     # Küldi / Címzett sor
     cimzett_str= f"<b>Címzett:</b> {ugyfel_nev or '–'}"
     kuldo_str  = f"<b>Küldi:</b> {kuldo_nev or '–'}   {kuldo_tel or ''}   {kuldo_email or ''}"
-    kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo), Paragraph(kuldo_str, s_kuldo)]],
+    kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo_b), Paragraph(kuldo_str, s_kuldo)]],
                    colWidths=[CW*0.55, CW*0.45])
     kc_tbl.setStyle(TableStyle([
         ('BOX',(0,0),(-1,-1),0.5, MID),
