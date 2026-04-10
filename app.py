@@ -156,9 +156,9 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     s_cim     = S('cim',  fontName=FBOLD, fontSize=20, textColor=colors.HexColor('#4B647F'),  leading=28, alignment=TA_LEFT)
     s_alcim   = S('alcim',fontName=FREG,  fontSize=10, textColor=SZURKE,leading=14)
     s_fejlec  = S('fej',  fontName=FBOLD, fontSize=8,  textColor=FEHER, leading=12, alignment=TA_CENTER)
-    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=8.5,textColor=SZURKE,leading=12)
+    s_lbl     = S('lbl',  fontName=FBOLD, fontSize=9,  textColor=SOTET, leading=12)
     s_val     = S('val',  fontName=FBOLD, fontSize=9,  textColor=SOTET, leading=13)
-    s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD,  leading=15)
+    s_ar      = S('ar',   fontName=FBOLD, fontSize=11, textColor=BORD, leading=15)
     s_body    = S('bdy',  fontName=FREG,  fontSize=9,leading=13, alignment=TA_JUSTIFY, textColor=SOTET)
     s_bev     = S('bev',  fontName=FREG,  fontSize=9,  leading=14, textColor=SOTET)
     s_labléc  = S('lab',  fontName=FREG,  fontSize=8,textColor=SZURKE,alignment=TA_CENTER)
@@ -167,7 +167,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     s_td      = S('td',   fontName=FREG,  fontSize=10,  textColor=SOTET, leading=13)
     s_td_ar   = S('tda',  fontName=FBOLD, fontSize=8,  textColor=BORD,  leading=12)
     s_kuldo   = S('kld',  fontName=FREG,  fontSize=9,textColor=SOTET, leading=13)
-    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=9,textColor=SOTET, leading=13)
+    s_kuldo_b = S('kldb', fontName=FBOLD, fontSize=10,textColor=SOTET, leading=13)
 
     def lap_lablec(canvas, doc):
         canvas.saveState()
@@ -214,7 +214,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
     story.append(Spacer(1, 6*mm))
 
     # Küldi / Címzett sor
-    cimzett_str= f"<b>Címzett:</b> {ugyfel_nev or '–'}"
+    cimzett_str = f"<b>{ugyfel_nev or '–'}</b>"
     kuldo_str  = f"<b>Küldi:</b> {kuldo_nev or '–'}   {kuldo_tel or ''}   {kuldo_email or ''}"
     kc_tbl = Table([[Paragraph(cimzett_str, s_kuldo_b), Paragraph(kuldo_str, s_kuldo)]],
                    colWidths=[CW*0.55, CW*0.45])
@@ -272,7 +272,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
             Paragraph(str(p.get('roomsText', p.get('rooms','–'))), s_td),
             Paragraph(fmt_price(p.get('priceHUF',0)), s_td_ar),
         ])
-    CW6 = [CW*0.30, CW*0.16, CW*0.12, CW*0.12, CW*0.10, CW*0.20]
+    CW6 = [CW*0.25, CW*0.16, CW*0.16, CW*0.12, CW*0.11, CW*0.20]
     oss_tbl = Table(oss_rows, colWidths=CW6)
     oss_tbl.setStyle(TableStyle([
         ('BACKGROUND',(0,0),(-1,0), colors.HexColor('#4B647F')),
@@ -283,6 +283,10 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
         ('RIGHTPADDING',(0,0),(-1,-1),4),
         ('TOPPADDING',(0,0),(-1,-1),3),
         ('BOTTOMPADDING',(0,0),(-1,-1),3),
+
+        ('ALIGN',(5,0),(5,-1),'RIGHT'),
+        ('RIGHTPADDING',(5,0),(5,-1),5),
+
     ]))
     story.append(oss_tbl)
 
@@ -429,7 +433,7 @@ with c2: kuldo_tel   = st.text_input("Telefon",        placeholder="pl. +36 20 7
 with c3: kuldo_email = st.text_input("E-mail",         placeholder="pl. norbi.otthonter@gmail.com")
 
 # 2. Ügyfél
-st.subheader("👤 Ügyfél neve")
+st.subheader("👤 Ügyfél adatai")
 ugyfel_nev = st.text_input("Ügyfél neve", placeholder="pl. Magyar Péter", label_visibility="collapsed")
 
 # 3. Bevezető szöveg
