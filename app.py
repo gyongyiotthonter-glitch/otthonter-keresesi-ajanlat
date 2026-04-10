@@ -373,7 +373,7 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
             rows_n = math.ceil(n / cols_n)
 
             GAP_X = 4*mm
-            GAP_Y = 3*mm
+            GAP_Y = 5*mm
 
             iw = (CW - GAP_X) / 2
             ih = iw * 0.72
@@ -406,11 +406,10 @@ def build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
                 ('LEFTPADDING',(0,0),(-1,-1),0),
                 ('RIGHTPADDING',(0,0),(-1,-1),0),
                 ('TOPPADDING',(0,0),(-1,-1),0),
-                ('BOTTOMPADDING',(0,0),(-1,-1),0),
+                ('BOTTOMPADDING',(0,0),(-1,-1),GAP_Y),
                 ('ALIGN',(0,0),(-1,-1),'CENTER'),
                 ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
                 ('COLSPACING',(0,0),(-1,-1),GAP_X),
-                ('ROWSPACING',(0,0),(-1,-1),GAP_Y),
             ]))
             story.append(foto_tbl)
 
