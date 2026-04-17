@@ -1,6 +1,7 @@
 import streamlit as st
 import requests, re, os, io, shutil, tempfile
 from datetime import date
+from pdf2docx import Converter
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import cm, mm
@@ -502,7 +503,7 @@ if st.button("➕  Újabb ingatlan hozzáadása", use_container_width=True):
 st.divider()
 
 # ── Generálás ──────────────────────────────────────────────────────────────────
-if st.button("📄  PDF Ajánlat Generálása", type="primary", use_container_width=True):
+if st.button("📄  Word Ajánlat Generálása", type="primary", use_container_width=True):
     valid = [(u, st.session_state.desc_list[i] if i < len(st.session_state.desc_list) else "")
              for i, u in enumerate(st.session_state.url_list)
              if u.strip() and extract_id(u)]
@@ -528,15 +529,27 @@ if st.button("📄  PDF Ajánlat Generálása", type="primary", use_container_wi
             if not properties:
                 st.error("Nem sikerült egyetlen ingatlan adatait sem letölteni!")
             else:
-                prog.progress(1.0, text="PDF generálása...")
+                prog.progress(1.0, text="Dokumentum generálása...")
                 pdf = build_pdf(properties, kuldo_nev, kuldo_tel, kuldo_email,
                                 ugyfel_nev, bevezeto)
                 safe = (ugyfel_nev or 'ajanlat').replace(' ','_')
-                fn   = f"OtthonTer_{safe}_{date.today().strftime('%Y%m%d')}.pdf"
+                # PDF → DOCX konverzió
+                with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_pdf:
+                    tmp_pdf.write(pdf)
+                    tmp_pdf_path = tmp_pdf.name
+                tmp_docx_path = tmp_pdf_path.replace('.pdf', '.docx')
+                cv = Converter(tmp_pdf_path)
+                cv.convert(tmp_docx_path)
+                cv.close()
+                with open(tmp_docx_path, 'rb') as f:
+                    docx_bytes = f.read()
+                os.unlink(tmp_pdf_path)
+                os.unlink(tmp_docx_path)
+                fn = f"OtthonTer_{safe}_{date.today().strftime('%Y%m%d')}.docx"
                 prog.empty()
-                st.success(f"✅ PDF kész! ({len(properties)} ingatlan · {len(pdf)//1024} KB)")
-                st.download_button("⬇️  PDF Letöltése", data=pdf,
-                                   file_name=fn, mime="application/pdf",
+                st.success(f"✅ Word dokumentum kész! ({len(properties)} ingatlan · {len(docx_bytes)//1024} KB)")
+                st.download_button("⬇️  Word Letöltése", data=docx_bytes,
+                                   file_name=fn, mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                                    use_container_width=True)
         finally:
             shutil.rmtree(tmpdir, ignore_errors=True)
